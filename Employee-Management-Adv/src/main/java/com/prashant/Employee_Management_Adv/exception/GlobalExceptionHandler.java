@@ -37,6 +37,14 @@ public class GlobalExceptionHandler {
             errors.put(error.getField(), error.getDefaultMessage());
         });
 
+        ValidationErrorResponse response=
+                new ValidationErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Validation Failed",
+                        LocalDateTime.now(),
+                        errors
+                );
+
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

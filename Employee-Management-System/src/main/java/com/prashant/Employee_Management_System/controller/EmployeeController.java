@@ -45,6 +45,7 @@ public class EmployeeController {
     }
 
 
+    // custom Query
     @GetMapping("/salaryMoreThan/{salary}")
     public List<Employee> getEmployeeSalaryMoreThan(@PathVariable double salary){
 

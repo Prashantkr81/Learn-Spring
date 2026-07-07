@@ -3,6 +3,7 @@ package com.prashant.Employee_Management_Adv.service;
 import com.prashant.Employee_Management_Adv.dto.EmployeeRequest;
 import com.prashant.Employee_Management_Adv.dto.EmployeeResponse;
 import com.prashant.Employee_Management_Adv.entity.Employee;
+import com.prashant.Employee_Management_Adv.exception.EmployeeNotFoundException;
 import com.prashant.Employee_Management_Adv.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,10 @@ public class EmployeeService {
 
     public EmployeeResponse getEmployeeById(Long id){
 
-        Employee employee= EmployeeRepo.findById(id).orElse(null);
+        Employee employee= EmployeeRepo.findById(id)
+                .orElseThrow(()-> new EmployeeNotFoundException(
+                        "Employee not with id: "+ id
+                ));
 
         if (employee == null) return null;
 

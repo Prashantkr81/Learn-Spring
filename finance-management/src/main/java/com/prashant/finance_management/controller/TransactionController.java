@@ -4,6 +4,7 @@ package com.prashant.finance_management.controller;
 import com.prashant.finance_management.dto.TransactionRequestDTO;
 import com.prashant.finance_management.dto.TransactionResponseDTO;
 import com.prashant.finance_management.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class TransactionController {
 
     @PutMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
-            @RequestBody TransactionRequestDTO requestDTO
+            @Valid @RequestBody TransactionRequestDTO requestDTO
     ){
         TransactionResponseDTO response = transactionService.createTransaction(requestDTO);
 
@@ -38,7 +39,7 @@ public class TransactionController {
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> updateTransaction(
             @PathVariable Long id,
-            @RequestBody TransactionRequestDTO requestDTO) {
+            @Valid @RequestBody TransactionRequestDTO requestDTO) {
 
         return ResponseEntity.ok(
                 transactionService.updateTransaction(id, requestDTO)

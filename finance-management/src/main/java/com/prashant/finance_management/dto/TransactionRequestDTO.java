@@ -1,16 +1,30 @@
 package com.prashant.finance_management.dto;
 
 import com.prashant.finance_management.enums.TransactionType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
 public class TransactionRequestDTO {
 
+    @NotBlank(message = "Title required")
     private String title;
+
+    @NotBlank(message = "Amount required")
+    @Positive(message = "Amount must be positive")
     private Double amount;
+
+    @NotBlank(message = "Category rrquired")
     private String category;
+
+    @NotBlank(message = "Transaction type required")
     private TransactionType type;
+
+    @NotBlank(message = "Date required")
     private LocalDate date;
+
+
     private String description;
 
     public TransactionRequestDTO() {

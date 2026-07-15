@@ -39,19 +39,19 @@ public class Transaction {
     @Column(length = 500)
     private String description;
 
-    public Transaction() {
-    }
+//    public Transaction() {
+//    }
 
-    public Transaction(Long id, String title, Double amount, String category, TransactionType type, LocalDate date, String description) {
-
-        this.id = id;
-        this.title = title;
-        this.amount = amount;
-        this.category = category;
-        this.type = type;
-        this.date = date;
-        this.description = description;
-    }
+//    public Transaction(Long id, String title, Double amount, String category, TransactionType type, LocalDate date, String description) {
+//
+//        this.id = id;
+//        this.title = title;
+//        this.amount = amount;
+//        this.category = category;
+//        this.type = type;
+//        this.date = date;
+//        this.description = description;
+//    }
 
     public Long getId() {
         return id;

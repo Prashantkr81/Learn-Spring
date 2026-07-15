@@ -19,7 +19,7 @@ public class TransactionController {
         this.transactionService= transactionService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<TransactionResponseDTO> createTransaction(
             @Valid @RequestBody TransactionRequestDTO requestDTO
     ){
@@ -28,7 +28,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> getTransactionById(@PathVariable Long id){
 
         TransactionResponseDTO response= transactionService.getTransactionById(id);

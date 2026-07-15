@@ -3,6 +3,7 @@ package com.prashant.finance_management.service.Impl;
 import com.prashant.finance_management.dto.TransactionRequestDTO;
 import com.prashant.finance_management.dto.TransactionResponseDTO;
 import com.prashant.finance_management.entity.Transaction;
+import com.prashant.finance_management.exception.ResourceNotFoundException;
 import com.prashant.finance_management.mapper.TransactionMapper;
 import com.prashant.finance_management.repository.TransactionRepository;
 import com.prashant.finance_management.service.TransactionService;
@@ -50,7 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Transaction not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Transaction not Found with id: "+ id));
 
         return TransactionMapper.toResponseDTO(transaction);
     }
@@ -59,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponseDTO updateTransaction(Long id, TransactionRequestDTO requestDTO) {
 
         Transaction transaction = transactionRepository.findById(id)
-                        .orElseThrow(()-> new RuntimeException("Transaction not found"));
+                        .orElseThrow(()->  new ResourceNotFoundException("Transaction not Found with id: "+ id));
 
         transaction.setTitle(requestDTO.getTitle());
         transaction.setType(requestDTO.getType());
@@ -76,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void deleteTransaction(Long id) {
         if (!transactionRepository.existsById(id)){
-            throw new RuntimeException("Transaction not found");
+            throw new ResourceNotFoundException("Transaction not Found with id: "+ id);
         }
 
         transactionRepository.deleteById(id);

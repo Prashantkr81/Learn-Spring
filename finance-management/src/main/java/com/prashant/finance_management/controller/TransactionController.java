@@ -180,4 +180,22 @@ public class TransactionController {
         List<TransactionResponseDTO> transactions = transactionService.searchTransactionsJPQL(keyword);
         return ResponseEntity.ok(transactions);
     }
+
+    //Native Queries
+    @GetMapping("/native/category/{category}")
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionByCategoryNative(
+            @PathVariable String category) {
+
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionByCategoryNative(category);
+        return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/native/amount/greater-than/{amount}")
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionByAmountGreaterThanNative(
+            @PathVariable Double amount) {
+
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionByAmountGreaterThanNative(amount);
+        return ResponseEntity.ok(transactions);
+
+    }
 }

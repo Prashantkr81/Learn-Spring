@@ -41,4 +41,10 @@ public interface TransactionService {
     List<TransactionResponseDTO> getTransactionByCategoryJPQL(String category);
     List<TransactionResponseDTO> getTransactionByAmountGreaterThanJPQL(Double amount);
     List<TransactionResponseDTO> searchTransactionsJPQL(String keyword);
+
+    //--------------------------------------------------------------
+
+    //Native Queries
+    List<TransactionResponseDTO> getTransactionByCategoryNative(String category);
+    List<TransactionResponseDTO> getTransactionByAmountGreaterThanNative(Double amount);
 }

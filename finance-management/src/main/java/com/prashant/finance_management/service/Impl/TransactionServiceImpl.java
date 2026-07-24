@@ -207,4 +207,24 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(TransactionMapper::toResponseDTO)
                 .toList();
     }
+
+    //--------------------------------------------------------------
+
+    //Native Queries
+    @Override
+    public List<TransactionResponseDTO> getTransactionByCategoryNative(String category) {
+        
+        return transactionRepository.findTransactionByCategoryNative(category)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByAmountGreaterThanNative(Double amount) {
+        return transactionRepository.findTransactionByAmountGreaterThanNative(amount)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
 }

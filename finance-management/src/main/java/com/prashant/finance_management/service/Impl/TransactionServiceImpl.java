@@ -1,16 +1,18 @@
 package com.prashant.finance_management.service.Impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.prashant.finance_management.dto.TransactionRequestDTO;
 import com.prashant.finance_management.dto.TransactionResponseDTO;
 import com.prashant.finance_management.entity.Transaction;
+import com.prashant.finance_management.enums.TransactionType;
 import com.prashant.finance_management.exception.ResourceNotFoundException;
 import com.prashant.finance_management.mapper.TransactionMapper;
 import com.prashant.finance_management.repository.TransactionRepository;
 import com.prashant.finance_management.service.TransactionService;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -36,7 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponseDTO> gtAllTransactions() {
+    public List<TransactionResponseDTO> getAllTransactions() {
 
         List<Transaction> transactions= transactionRepository.findAll();
 
@@ -83,5 +85,96 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.deleteById(id);
     }
 
+    @Override
+    public List<TransactionResponseDTO> getTransactionByCategory(String category){
 
+        return transactionRepository.findByCategory(category)
+                .stream()
+                .map(TransactionMapper:: toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByType(TransactionType type){
+
+        return transactionRepository.findByType(type)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionsByAmountGreaterThan(Double amount){
+
+        return transactionRepository.findByAmountGreaterThan(amount)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionsByAmountLessThan(Double amount){
+
+        return transactionRepository.findByAmountLessThan(amount)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionsByAmountBetween(Double min, Double max) {
+        return transactionRepository.findByAmountBetween(min, max)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> searchTransactions(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getAllTransactions();
+        }
+
+        List<Transaction> matchedTransactions = new ArrayList<>();
+        matchedTransactions.addAll(transactionRepository.findByTitleContaining(keyword));
+        matchedTransactions.addAll(transactionRepository.findByTitleStartsWith(keyword));
+        matchedTransactions.addAll(transactionRepository.findByTitleEndsWith(keyword));
+
+        List<Transaction> uniqueTransactions = new ArrayList<>();
+        for (Transaction transaction : matchedTransactions) {
+            boolean alreadyAdded = uniqueTransactions.stream()
+                    .anyMatch(existing -> existing.getId() != null && existing.getId().equals(transaction.getId()));
+            if (!alreadyAdded) {
+                uniqueTransactions.add(transaction);
+            }
+        }
+
+        return uniqueTransactions.stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByCategoryAndType(String category, TransactionType type) {
+        return transactionRepository.findByCategoryAndType(category, type)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByTypeSortedDesc(TransactionType type) {
+        return transactionRepository.findByTypeOrderByAmountDesc(type)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByTypeSortedAsc(TransactionType type) {
+        return transactionRepository.findByTypeOrderByAmountAsc(type)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
 }

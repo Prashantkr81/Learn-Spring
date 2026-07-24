@@ -47,4 +47,9 @@ public interface TransactionService {
     //Native Queries
     List<TransactionResponseDTO> getTransactionByCategoryNative(String category);
     List<TransactionResponseDTO> getTransactionByAmountGreaterThanNative(Double amount);
+
+
+    //JDBC
+
+    List<TransactionResponseDTO> findAllTransactions();
 }

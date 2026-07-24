@@ -198,4 +198,13 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
 
     }
+
+
+    //JDBC
+    @GetMapping("/jdbc/all")
+    public ResponseEntity<List<TransactionResponseDTO>>  findAllTransactions() {
+        List<TransactionResponseDTO> transactions = transactionService.findAllTransactions();
+        return ResponseEntity.ok(transactions);
+    }
+
 }

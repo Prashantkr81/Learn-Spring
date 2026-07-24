@@ -177,4 +177,34 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(TransactionMapper::toResponseDTO)
                 .toList();
     }
+
+    //--------------------------------------------------------------
+    @Override
+    public List<TransactionResponseDTO> getTransactionByCategoryJPQL(String category) {
+        return transactionRepository.findTransactionByCategoryJPQL(category)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getTransactionByAmountGreaterThanJPQL(Double amount) {
+        return transactionRepository.findTransactionByAmountGreaterThanJPQL(amount)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> searchTransactionsJPQL(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getAllTransactions();
+        }
+
+        List<Transaction> matchedTransactions = transactionRepository.searchTransactionsJPQL(keyword);
+
+        return matchedTransactions.stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
 }

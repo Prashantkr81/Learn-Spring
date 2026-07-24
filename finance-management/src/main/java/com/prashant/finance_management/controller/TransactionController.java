@@ -156,4 +156,28 @@ public class TransactionController {
 
     }
 
+    @GetMapping("/jpql/category/{category}")
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionByCategoryJPQL(
+            @PathVariable String category) {
+
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionByCategoryJPQL(category);
+        return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/jpql/amount/greater-than/{amount}")
+    public ResponseEntity<List<TransactionResponseDTO>> getTransactionByAmountGreaterThanJPQL(  
+            @PathVariable Double amount) {
+
+        List<TransactionResponseDTO> transactions = transactionService.getTransactionByAmountGreaterThanJPQL(amount);
+        return ResponseEntity.ok(transactions);
+
+    }
+
+    @GetMapping("/jpql/search")
+    public ResponseEntity<List<TransactionResponseDTO>> searchTransactionsJPQL(
+            @RequestParam(required = false) String keyword) {
+
+        List<TransactionResponseDTO> transactions = transactionService.searchTransactionsJPQL(keyword);
+        return ResponseEntity.ok(transactions);
+    }
 }

@@ -1,10 +1,13 @@
 package com.prashant.finance_management.repository;
 
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.prashant.finance_management.entity.Transaction;
 import com.prashant.finance_management.enums.TransactionType;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface TransactionRepository extends JpaRepository <Transaction, Long> {
 
@@ -35,4 +38,27 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
 
     List<Transaction> findByTypeOrderByAmountAsc(TransactionType type);
 
+
+    //-----------------------------------------------------------------
+    // JPQL Queries
+    @Query("""
+        SELECT t FROM 
+        Transaction t
+        WHERE t.category = :category
+            """)
+    List<Transaction> findTransactionByCategoryJPQL(@Param("category") String category);
+
+    @Query("""
+        SELECT t FROM 
+        Transaction t
+        WHERE t.amount > :amount
+            """)
+    List<Transaction> findTransactionByAmountGreaterThanJPQL(@Param("amount") Double amount);
+
+    //JPQL me SELECT t likhna optional hota hai.
+    @Query("""
+        FROM Transaction t
+        WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            """)
+    List<Transaction> searchTransactionsJPQL(@Param("keyword") String keyword);
 }

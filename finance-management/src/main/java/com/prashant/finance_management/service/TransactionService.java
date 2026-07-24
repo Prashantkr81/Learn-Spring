@@ -1,10 +1,10 @@
 package com.prashant.finance_management.service;
 
+import java.util.List;
+
 import com.prashant.finance_management.dto.TransactionRequestDTO;
 import com.prashant.finance_management.dto.TransactionResponseDTO;
 import com.prashant.finance_management.enums.TransactionType;
-
-import java.util.List;
 
 public interface TransactionService {
 
@@ -35,4 +35,10 @@ public interface TransactionService {
     List<TransactionResponseDTO> getTransactionByTypeSortedDesc(TransactionType type);
 
     List<TransactionResponseDTO> getTransactionByTypeSortedAsc(TransactionType type);
+
+    //--------------------------------------------------------------
+
+    List<TransactionResponseDTO> getTransactionByCategoryJPQL(String category);
+    List<TransactionResponseDTO> getTransactionByAmountGreaterThanJPQL(Double amount);
+    List<TransactionResponseDTO> searchTransactionsJPQL(String keyword);
 }

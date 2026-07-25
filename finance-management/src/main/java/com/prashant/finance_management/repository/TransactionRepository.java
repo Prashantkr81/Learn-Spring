@@ -61,4 +61,22 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
         WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
             """)
     List<Transaction> searchTransactionsJPQL(@Param("keyword") String keyword);
+
+    //---------------------------------------------------------
+
+    //Native SQL
+
+    @Query(value = """
+        SELECT * FROM transaction
+        WHERE category = :category
+        """, nativeQuery = true)
+    List<Transaction> findTransactionByCategoryNative(@Param("category") String category);
+
+    @Query(value = """
+        SELECT * FROM transaction
+        WHERE amount > :amount
+        ORDER BY amount DESC
+        """, nativeQuery = true)
+    List<Transaction> findTransactionByAmountGreaterThanNative(@Param("amount") Double amount);
+
 }

@@ -10,6 +10,7 @@ import com.prashant.finance_management.dto.TransactionResponseDTO;
 import com.prashant.finance_management.entity.Transaction;
 import com.prashant.finance_management.enums.TransactionType;
 import com.prashant.finance_management.exception.ResourceNotFoundException;
+import com.prashant.finance_management.jdbc.TransactionJdbcRepository;
 import com.prashant.finance_management.mapper.TransactionMapper;
 import com.prashant.finance_management.repository.TransactionRepository;
 import com.prashant.finance_management.service.TransactionService;
@@ -18,9 +19,15 @@ import com.prashant.finance_management.service.TransactionService;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final TransactionJdbcRepository transactionJdbcRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    // public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    //     this.transactionRepository = transactionRepository;
+    // }
+
+    public TransactionServiceImpl(TransactionRepository transactionRepository, TransactionJdbcRepository transactionJdbcRepository) {
         this.transactionRepository = transactionRepository;
+        this.transactionJdbcRepository = transactionJdbcRepository;
     }
 
 
@@ -223,6 +230,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionResponseDTO> getTransactionByAmountGreaterThanNative(Double amount) {
         return transactionRepository.findTransactionByAmountGreaterThanNative(amount)
+                .stream()
+                .map(TransactionMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<TransactionResponseDTO> findAllTransactions() {
+        return transactionJdbcRepository.findAllTransactions()
                 .stream()
                 .map(TransactionMapper::toResponseDTO)
                 .toList();

@@ -16,8 +16,11 @@ public class SpringSecurity {
         http
         .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/employees").permitAll()
-                        .anyRequest().authenticated()
+                    // Sirf GET request permit hogi (Public)
+                    .requestMatchers(HttpMethod.GET, "/employee", "/employee/**").permitAll()
+                    
+                    // Baaki sab (POST, PUT, DELETE) ke liye Authentication zaroori hoga
+                    .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
 

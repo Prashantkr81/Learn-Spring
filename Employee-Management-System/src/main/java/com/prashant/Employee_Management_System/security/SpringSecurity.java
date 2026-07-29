@@ -16,6 +16,7 @@ public class SpringSecurity {
         http
         .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
                     // Sirf GET request permit hogi (Public)
                     .requestMatchers(HttpMethod.GET, "/employee", "/employee/**").permitAll()
                     

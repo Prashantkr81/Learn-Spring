@@ -18,6 +18,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    private final JwtService jwtService;
+
     public void register(RegisterRequest request) {
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -33,7 +35,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequest request) {
+    public String login(LoginRequest request) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -41,5 +43,7 @@ public class AuthService {
                         request.getPassword()
                 )
         );
+
+        return jwtService.generateToken(request.getUsername());
     }
 }

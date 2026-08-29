@@ -1,5 +1,6 @@
 package com.prashant.jwtAuth.controller;
 
+import com.prashant.jwtAuth.dto.AuthResponse;
 import com.prashant.jwtAuth.dto.LoginRequest;
 import com.prashant.jwtAuth.dto.RegisterRequest;
 import com.prashant.jwtAuth.service.AuthService;
@@ -25,11 +26,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request) {
 
-        authService.login(request);
+        String token = authService.login(request);
 
-        return ResponseEntity.ok("Login successful");
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }

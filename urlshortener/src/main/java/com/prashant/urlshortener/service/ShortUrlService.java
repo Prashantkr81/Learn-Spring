@@ -112,4 +112,26 @@ public class ShortUrlService {
                         .build())
                 .toList();
     }
+
+    @Transactional
+    public void deleteShortUrl(Long userId, Long shortUrlId) {
+
+        ShortUrl shortUrl = shortUrlRepository
+                .findById(shortUrlId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Short URL not found"
+                        )
+                );
+
+        if (!shortUrl.getOwner().getId().equals(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You cannot delete another user's short URL"
+            );
+        }
+
+        shortUrlRepository.delete(shortUrl);
+    }
 }

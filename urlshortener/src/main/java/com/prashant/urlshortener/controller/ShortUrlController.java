@@ -56,4 +56,14 @@ public class ShortUrlController {
 
         return ResponseEntity.ok(urls);
     }
+
+    @DeleteMapping("/api/urls/{shortUrlId}/user/{userId}")
+    public ResponseEntity<Void> deleteShortUrl(
+            @PathVariable Long shortUrlId,
+            @PathVariable Long userId) {
+
+        shortUrlService.deleteShortUrl(userId, shortUrlId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

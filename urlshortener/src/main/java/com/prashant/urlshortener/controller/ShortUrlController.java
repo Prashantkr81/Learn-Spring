@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ShortUrlController {
 
@@ -43,5 +45,15 @@ public class ShortUrlController {
                 .status(HttpStatus.FOUND)
                 .header("Location", originalUrl)
                 .build();
+    }
+
+    @GetMapping("/api/urls/user/{userId}")
+    public ResponseEntity<List<ShortUrlResponse>> getUserUrls(
+            @PathVariable Long userId) {
+
+        List<ShortUrlResponse> urls =
+                shortUrlService.getUserUrls(userId);
+
+        return ResponseEntity.ok(urls);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 public class ShortUrlService {
@@ -86,5 +87,29 @@ public class ShortUrlService {
                         )
                         );
         return shortUrl.getOriginalUrl();
+    }
+
+    public List<ShortUrlResponse> getUserUrls(Long userId) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found"
+            );
+        }
+
+        List<ShortUrl> urls =
+                shortUrlRepository.findByOwner_Id(userId);
+
+        return urls.stream()
+                .map(url -> ShortUrlResponse.builder()
+                        .id(url.getId())
+                        .OriginalUrl(url.getOriginalUrl())
+                        .shortUrl(
+                                "http://localhost:8080/"
+                                        + url.getShortUrl()
+                        )
+                        .build())
+                .toList();
     }
 }

@@ -19,6 +19,4 @@ public class CreateShortUrlRequest {
     )
     private String originalUrl;
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
 }

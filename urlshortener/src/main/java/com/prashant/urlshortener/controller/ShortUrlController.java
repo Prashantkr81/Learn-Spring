@@ -7,6 +7,7 @@ import com.prashant.urlshortener.service.ShortUrlService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +24,11 @@ public class ShortUrlController {
     // Create a short URL
     @PostMapping("/api/urls")
     public ResponseEntity<ShortUrlResponse> createShortUrl(
-            @Valid @RequestBody CreateShortUrlRequest request) {
+            @Valid @RequestBody CreateShortUrlRequest request,
+            Authentication authentication) {
 
         ShortUrlResponse response =
-                shortUrlService.createShortUrl(request);
+                shortUrlService.createShortUrl(request, authentication.getName());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -34,7 +36,7 @@ public class ShortUrlController {
     }
 
     // Redirect to the original URL
-    @GetMapping("/{shortCode}")
+    @GetMapping("/{shortCode:[a-zA-Z0-9]+}")
     public ResponseEntity<Void> redirect(
             @PathVariable String shortCode) {
 
@@ -47,22 +49,22 @@ public class ShortUrlController {
                 .build();
     }
 
-    @GetMapping("/api/urls/user/{userId}")
+    @GetMapping("/api/urls/me")
     public ResponseEntity<List<ShortUrlResponse>> getUserUrls(
-            @PathVariable Long userId) {
+            Authentication authentication) {
 
         List<ShortUrlResponse> urls =
-                shortUrlService.getUserUrls(userId);
+                shortUrlService.getUserUrls(authentication.getName());
 
         return ResponseEntity.ok(urls);
     }
 
-    @DeleteMapping("/api/urls/{shortUrlId}/user/{userId}")
+    @DeleteMapping("/api/urls/{shortUrlId}")
     public ResponseEntity<Void> deleteShortUrl(
             @PathVariable Long shortUrlId,
-            @PathVariable Long userId) {
+            Authentication authentication) {
 
-        shortUrlService.deleteShortUrl(userId, shortUrlId);
+        shortUrlService.deleteShortUrl(authentication.getName(), shortUrlId);
 
         return ResponseEntity.noContent().build();
     }

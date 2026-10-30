@@ -35,11 +35,13 @@ public class ShortUrlService {
 
     @Transactional
     public ShortUrlResponse createShortUrl(
-            CreateShortUrlRequest request) {
+            CreateShortUrlRequest request, String email) {
 
-        User owner = userRepository.findById(request.getUserId())
+        User owner = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("User not found"));
+                        new ResponseStatusException(
+                                HttpStatus.UNAUTHORIZED, "User not found"
+                        ));
 
         String shortCode = generateUniqueCode();
 
@@ -89,17 +91,17 @@ public class ShortUrlService {
         return shortUrl.getOriginalUrl();
     }
 
-    public List<ShortUrlResponse> getUserUrls(Long userId) {
+    @Transactional(readOnly = true)
+    public List<ShortUrlResponse> getUserUrls(String email) {
 
-        if (!userRepository.existsById(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+        User owner = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
                     "User not found"
-            );
-        }
+            ));
 
         List<ShortUrl> urls =
-                shortUrlRepository.findByOwner_Id(userId);
+                shortUrlRepository.findByOwner_Id(owner.getId());
 
         return urls.stream()
                 .map(url -> ShortUrlResponse.builder()
@@ -114,7 +116,13 @@ public class ShortUrlService {
     }
 
     @Transactional
-    public void deleteShortUrl(Long userId, Long shortUrlId) {
+    public void deleteShortUrl(String email, Long shortUrlId) {
+
+        User owner = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "User not found"
+                ));
 
         ShortUrl shortUrl = shortUrlRepository
                 .findById(shortUrlId)
@@ -125,7 +133,7 @@ public class ShortUrlService {
                         )
                 );
 
-        if (!shortUrl.getOwner().getId().equals(userId)) {
+        if (!shortUrl.getOwner().getId().equals(owner.getId())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "You cannot delete another user's short URL"

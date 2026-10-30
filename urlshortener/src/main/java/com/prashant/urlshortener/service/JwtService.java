@@ -40,12 +40,14 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    public boolean isValidToken(String token, String email){
+
+    public boolean isValidToken(String token, String email) {
         Claims claims = extractAllClaims(token);
 
         return claims.getSubject().equals(email)
-                && claims.getExpiration().before(new Date());
+                && claims.getExpiration().after(new Date());
     }
+
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()

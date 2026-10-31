@@ -17,7 +17,7 @@ public class ShortUrlResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String OriginalUrl;
+    private String originalUrl;
     private String shortUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

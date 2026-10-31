@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.security.SecureRandom;
 import java.util.List;
 
@@ -55,7 +60,7 @@ public class ShortUrlService {
 
         return ShortUrlResponse.builder()
                 .id(savedUrl.getId())
-                .OriginalUrl(savedUrl.getOriginalUrl())
+                .originalUrl(savedUrl.getOriginalUrl())
                 .shortUrl("http://localhost:8080/" + savedUrl.getShortUrl())
                 .createdAt(savedUrl.getCreatedAt())
                 .updatedAt(savedUrl.getUpdatedAt())
@@ -94,29 +99,74 @@ public class ShortUrlService {
     }
 
     @Transactional(readOnly = true)
-    public List<ShortUrlResponse> getUserUrls(String email) {
+    public Page<ShortUrlResponse> getUserUrls(
+            String email,
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
 
         User owner = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "User not found"
-            ));
+                        HttpStatus.UNAUTHORIZED,
+                        "User not found"
+                ));
 
-        List<ShortUrl> urls =
-                shortUrlRepository.findByOwner_Id(owner.getId());
+        // Prevent invalid page size
+        if (page < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page number cannot be negative"
+            );
+        }
 
-        return urls.stream()
-                .map(url -> ShortUrlResponse.builder()
-                        .id(url.getId())
-                        .OriginalUrl(url.getOriginalUrl())
-                        .shortUrl(
-                                "http://localhost:8080/"
-                                        + url.getShortUrl()
-                        )
-                        .createdAt(url.getCreatedAt())
-                        .updatedAt(url.getUpdatedAt())
-                        .build())
-                .toList();
+        if (size < 1 || size > 100) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page size must be between 1 and 100"
+            );
+        }
+
+        // Allow only supported sorting fields
+        if (!List.of("id", "createdAt", "updatedAt").contains(sortBy)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid sort field"
+            );
+        }
+
+
+        if (!"asc".equalsIgnoreCase(direction)
+                && !"desc".equalsIgnoreCase(direction)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Direction must be asc or desc"
+            );
+        }
+
+        Sort.Direction sortDirection =
+                "asc".equalsIgnoreCase(direction)
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC;
+
+        Sort sort = Sort.by(
+                new Sort.Order(sortDirection, sortBy),
+                Sort.Order.asc("id")
+        );
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<ShortUrl> urls =
+                shortUrlRepository.findByOwner_Id(owner.getId(), pageable);
+
+        return urls.map(url -> ShortUrlResponse.builder()
+                .id(url.getId())
+                .originalUrl(url.getOriginalUrl())
+                .shortUrl("http://localhost:8080/" + url.getShortUrl())
+                .createdAt(url.getCreatedAt())
+                .updatedAt(url.getUpdatedAt())
+                .build());
     }
 
     @Transactional

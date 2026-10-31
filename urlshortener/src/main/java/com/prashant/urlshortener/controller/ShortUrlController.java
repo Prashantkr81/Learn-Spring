@@ -5,6 +5,7 @@ import com.prashant.urlshortener.dto.CreateShortUrlRequest;
 import com.prashant.urlshortener.dto.ShortUrlResponse;
 import com.prashant.urlshortener.service.ShortUrlService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,11 +51,20 @@ public class ShortUrlController {
     }
 
     @GetMapping("/api/urls/me")
-    public ResponseEntity<List<ShortUrlResponse>> getUserUrls(
+    public ResponseEntity<Page<ShortUrlResponse>> getUserUrls(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
             Authentication authentication) {
 
-        List<ShortUrlResponse> urls =
-                shortUrlService.getUserUrls(authentication.getName());
+        Page<ShortUrlResponse> urls = shortUrlService.getUserUrls(
+                authentication.getName(),
+                page,
+                size,
+                sortBy,
+                direction
+        );
 
         return ResponseEntity.ok(urls);
     }

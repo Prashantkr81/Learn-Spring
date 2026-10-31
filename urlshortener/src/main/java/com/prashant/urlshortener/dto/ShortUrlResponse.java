@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @Setter
@@ -17,4 +19,6 @@ public class ShortUrlResponse {
     private Long id;
     private String OriginalUrl;
     private String shortUrl;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

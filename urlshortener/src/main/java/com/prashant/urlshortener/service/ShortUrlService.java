@@ -57,6 +57,8 @@ public class ShortUrlService {
                 .id(savedUrl.getId())
                 .OriginalUrl(savedUrl.getOriginalUrl())
                 .shortUrl("http://localhost:8080/" + savedUrl.getShortUrl())
+                .createdAt(savedUrl.getCreatedAt())
+                .updatedAt(savedUrl.getUpdatedAt())
                 .build();
     }
 
@@ -111,6 +113,8 @@ public class ShortUrlService {
                                 "http://localhost:8080/"
                                         + url.getShortUrl()
                         )
+                        .createdAt(url.getCreatedAt())
+                        .updatedAt(url.getUpdatedAt())
                         .build())
                 .toList();
     }

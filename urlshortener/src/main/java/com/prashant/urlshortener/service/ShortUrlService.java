@@ -1,5 +1,6 @@
 package com.prashant.urlshortener.service;
 
+import com.prashant.urlshortener.config.AppProperties;
 import com.prashant.urlshortener.dto.CreateShortUrlRequest;
 import com.prashant.urlshortener.dto.ShortUrlResponse;
 import com.prashant.urlshortener.entity.ShortUrl;
@@ -29,13 +30,16 @@ public class ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
     private final UserRepository userRepository;
+    private final AppProperties appProperties;
     private final SecureRandom random = new SecureRandom();
 
     public ShortUrlService(
             ShortUrlRepository shortUrlRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            AppProperties appProperties) {
         this.shortUrlRepository = shortUrlRepository;
         this.userRepository = userRepository;
+        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -61,7 +65,7 @@ public class ShortUrlService {
         return ShortUrlResponse.builder()
                 .id(savedUrl.getId())
                 .originalUrl(savedUrl.getOriginalUrl())
-                .shortUrl("http://localhost:8080/" + savedUrl.getShortUrl())
+                .shortUrl(appProperties.getBaseUrl() + "/" + savedUrl.getShortUrl())
                 .createdAt(savedUrl.getCreatedAt())
                 .updatedAt(savedUrl.getUpdatedAt())
                 .build();
@@ -163,7 +167,7 @@ public class ShortUrlService {
         return urls.map(url -> ShortUrlResponse.builder()
                 .id(url.getId())
                 .originalUrl(url.getOriginalUrl())
-                .shortUrl("http://localhost:8080/" + url.getShortUrl())
+                .shortUrl(appProperties.getBaseUrl() + "/" + url.getShortUrl())
                 .createdAt(url.getCreatedAt())
                 .updatedAt(url.getUpdatedAt())
                 .build());

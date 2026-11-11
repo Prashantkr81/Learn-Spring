@@ -20,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ShortUrlService {
@@ -119,7 +120,8 @@ public class ShortUrlService {
         redisTemplate.opsForValue().set(
                 cacheKey,
                 originalUrl,
-                appProperties.getRedisTtl()
+                appProperties.getRedisTtl(),
+                TimeUnit.SECONDS
         );
 
         return originalUrl;
@@ -222,5 +224,9 @@ public class ShortUrlService {
         }
 
         shortUrlRepository.delete(shortUrl);
+
+        String cacheKey = "shorturl:" + shortUrl.getShortUrl();
+
+        redisTemplate.delete(cacheKey);
     }
 }

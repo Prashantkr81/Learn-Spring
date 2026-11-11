@@ -15,9 +15,13 @@ public class AppProperties {
         return baseUrl;
     }
 
-    private Duration redisTtl;
-    @Value("${app.redis.ttl}")
-    public Duration getRedisTtl(){
+    private long redisTtl = 3600;
+
+    public long getRedisTtl() {
         return redisTtl;
+    }
+
+    public void setRedisTtl(long redisTtl) {
+        this.redisTtl = redisTtl;
     }
 }

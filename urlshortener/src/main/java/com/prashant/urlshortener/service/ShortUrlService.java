@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -32,14 +33,17 @@ public class ShortUrlService {
     private final UserRepository userRepository;
     private final AppProperties appProperties;
     private final SecureRandom random = new SecureRandom();
+    private final RedisTemplate<String, String> redisTemplate;
 
     public ShortUrlService(
             ShortUrlRepository shortUrlRepository,
             UserRepository userRepository,
-            AppProperties appProperties) {
+            AppProperties appProperties,
+            RedisTemplate<String, String> redisTemplate) {
         this.shortUrlRepository = shortUrlRepository;
         this.userRepository = userRepository;
         this.appProperties = appProperties;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional
@@ -91,6 +95,16 @@ public class ShortUrlService {
 
     public String getOriginalUrl(String shortCode) {
 
+        String cacheKey = "shorturl:" + shortCode;
+
+        String cacheUrl = redisTemplate.opsForValue().get(cacheKey);
+
+        if (cacheUrl != null) {
+            System.out.println("Redis cache HIT");
+            return cacheUrl;
+        }
+        System.out.println("Redis cache MISS");
+
         ShortUrl shortUrl= shortUrlRepository
                 .findByShortUrl(shortCode)
                 .orElseThrow(()->
@@ -99,7 +113,16 @@ public class ShortUrlService {
                                 "No such shortUrl"
                         )
                         );
-        return shortUrl.getOriginalUrl();
+
+        String originalUrl = shortUrl.getOriginalUrl();
+
+        redisTemplate.opsForValue().set(
+                cacheKey,
+                originalUrl,
+                appProperties.getRedisTtl()
+        );
+
+        return originalUrl;
     }
 
     @Transactional(readOnly = true)
